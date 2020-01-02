@@ -1,4 +1,6 @@
 .idea/
+tmp/*
+test-result/*
 /yabe.iml
 /Yet Another Blog Application.iml
 /Yet Another Blog Application.ipr
