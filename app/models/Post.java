@@ -1,31 +1,39 @@
 package models;
 
-import com.sun.javafx.scene.control.skin.VirtualFlow;
 import play.db.jpa.Model;
 
 import javax.persistence.*;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
+import play.data.validation.*;
 
 @Entity
 public class Post extends Model {
 
+    @Required
     public String title;
+
+    @Required
     public Date postedAt;
 
     @Lob
+    @Required
+    @MaxSize(10000)
     public String content;
 
     @ManyToOne
+    @Required
     public User author;
 
     @OneToMany(mappedBy = "post", cascade = CascadeType.ALL)
     public List<Comment> comments;
 
+    @ManyToMany(cascade = CascadeType.PERSIST)
+    public Set<Tag> tags;
+
     public Post(User author, String title, String content) {
 
         this.comments = new ArrayList<>();
+        this.tags = new TreeSet<>();
         this.author = author;
         this.title = title;
         this.content = content;
@@ -48,7 +56,23 @@ public class Post extends Model {
         return Post.find("postedAt > ?1 order by postedAt desc", postedAt).first();
     }
 
+    public Post tagItWith(String name) {
+        tags.add(Tag.findOrCreateByName(name));
+        return this;
+    }
 
+    public static List<Post> findTaggedWith(String tag) {
 
+        return Post.find("select distinct p from Post p join p.tags as t where t.name = ?1", tag).fetch();
+    }
 
+    public static List<Post> findTaggedWith(String... tags) {
+        return Post.find("select distinct p from Post p join p.tags as t where t.name in (:tags) group by p.id, p.author, p.title, p.content,p.postedAt having count(t.id) = :size")
+                .bind("tags", tags).bind("size", tags.length).fetch();
+    }
+
+    @Override
+    public String toString() {
+        return title;
+    }
 }

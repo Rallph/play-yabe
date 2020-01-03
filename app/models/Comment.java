@@ -28,4 +28,8 @@ public class Comment extends Model {
 
     }
 
+    @Override
+    public String toString() {
+        return String.format("%s on %s", content, post.title);
+    }
 }
