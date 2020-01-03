@@ -40,6 +40,13 @@ public class Post extends Model {
         return this;
     }
 
+    public Post previous() {
+        return Post.find("postedAt < ?1 order by postedAt desc", postedAt).first();
+    }
+
+    public Post next() {
+        return Post.find("postedAt > ?1 order by postedAt desc", postedAt).first();
+    }
 
 
 
