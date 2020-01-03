@@ -6,6 +6,10 @@
 GET     /admin/?                                Admin.index
 *       /admin                                  module:crud
 
+GET     /admin/myPosts/{id}                     Admin.form
+GET     /admin/new                              Admin.form
+POST    /admin/myPosts/{id}                     Admin.save
+POST    /admin/new                              Admin.save
 
 # Import CRUD routes
 *        /admin                                  module:crud
